@@ -50,13 +50,13 @@ func NewRobot(hSize, vSize, xCoordinate, yCoordinate int, direction Direction) R
 		log.Fatal("robot's starting position is not within the rectangular plane")
 	}
 
-	handler := Robot{
+	robot := Robot{
 		plane:       plane,
 		direction:   direction,
 		xCoordinate: xCoordinate,
 		yCoordinate: yCoordinate,
 	}
-	return handler
+	return robot
 }
 
 //StartRobot starts the robot with the commands. Robot would stop, if any command is not valid.
