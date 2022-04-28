@@ -34,8 +34,6 @@ type Robot struct {
 //NewRobot builds a Robot with valid config
 func NewRobot(hSize, vSize, xCoordinate, yCoordinate int, direction Direction) Robot {
 	//Align with the requirement. Increasing by 1.
-	hSize = hSize + 1
-	vSize = vSize + 1
 
 	if len(direction) != 1 || strings.ContainsAny(string(direction), "NSEW") == false {
 		log.Fatal("robot's starting direction is not valid")
@@ -68,15 +66,15 @@ func (c *Robot) StartRobot(commands string) (int, int, Direction, error) {
 			c.changeDirection(nextStep)
 			continue
 		} else if nextStep == Move {
-			err := c.moveRobot()
-			if err != nil {
-				return 0, 0, North, err
+			isMoved := c.moveRobot()
+			if isMoved == false {
+				return c.xCoordinate, c.yCoordinate, c.direction, nil
 			}
 		} else {
 			return 0, 0, North, errors.New("robot's command is not valid")
 		}
 	}
-	return c.yCoordinate, c.xCoordinate, c.direction, nil
+	return c.xCoordinate, c.yCoordinate, c.direction, nil
 }
 
 func (c *Robot) changeDirection(command Command) {
@@ -105,25 +103,29 @@ func (c *Robot) changeDirection(command Command) {
 	}
 }
 
-func (c *Robot) moveRobot() error {
+func (c *Robot) moveRobot() bool {
+	xAxis, yAxis := c.xCoordinate, c.yCoordinate
 	switch {
 	case c.direction == North:
-		c.xCoordinate = c.xCoordinate + 1
+		xAxis = c.xCoordinate + 1
 	case c.direction == South:
-		c.xCoordinate = c.xCoordinate - 1
+		xAxis = c.xCoordinate - 1
 	case c.direction == East:
-		c.yCoordinate = c.yCoordinate + 1
+		yAxis = c.yCoordinate + 1
 	case c.direction == West:
-		c.yCoordinate = c.yCoordinate - 1
+		yAxis = c.yCoordinate - 1
 	}
-	if c.xCoordinate >= len(c.plane) || c.xCoordinate < 0 || c.yCoordinate >= len(c.plane[c.xCoordinate]) || c.yCoordinate < 0 {
-		return errors.New("robot is trying to walk away from the rectangular plane")
-	} else if c.plane[c.xCoordinate][c.yCoordinate] == mark {
-		return errors.New("robot is trying to walk where it already travelled")
-	} else if c.plane[c.xCoordinate][c.yCoordinate] != "" {
-		return errors.New("robot has particle on its way")
+
+	if xAxis >= len(c.plane[c.xCoordinate]) || xAxis < 0 || yAxis >= len(c.plane) || yAxis < 0 {
+		return false
+	} else if c.plane[xAxis][yAxis] == mark {
+		return false
+	} else if c.plane[xAxis][yAxis] != "" {
+		return false
 	} else {
+		c.xCoordinate = xAxis
+		c.yCoordinate = yAxis
 		c.plane[c.xCoordinate][c.yCoordinate] = mark
 	}
-	return nil
+	return true
 }
