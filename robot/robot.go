@@ -107,9 +107,9 @@ func (c *Robot) moveRobot() bool {
 	xAxis, yAxis := c.xCoordinate, c.yCoordinate
 	switch {
 	case c.direction == North:
-		yAxis = c.xCoordinate + 1
+		xAxis = c.xCoordinate + 1
 	case c.direction == South:
-		yAxis = c.xCoordinate - 1
+		xAxis = c.xCoordinate - 1
 	case c.direction == East:
 		yAxis = c.yCoordinate + 1
 	case c.direction == West:
